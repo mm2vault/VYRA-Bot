@@ -115,6 +115,36 @@ async function openTicket(interaction, client) {
   return interaction.reply({ content: '✅ Biletin açıldı: ' + channel, ephemeral: true });
 }
 
+
+async function checkRelease(client) {
+  const channelId = process.env.RELEASE_CHANNEL_ID;
+  if (!channelId) return;
+  try {
+    const response = await fetch('https://api.github.com/repos/mm2vault/VYRA/releases/latest', {
+      headers: { 'User-Agent': 'VYRA-Discord-Bot', 'Accept': 'application/vnd.github+json' }
+    });
+    if (!response.ok) throw new Error('GitHub Releases API returned ' + response.status);
+    const release = await response.json();
+    if (!release || !release.id || release.draft || release.prerelease) return;
+    if (!data.lastReleaseId) {
+      data.lastReleaseId = release.id;
+      saveData();
+      return;
+    }
+    if (String(data.lastReleaseId) === String(release.id)) return;
+    const channel = await client.channels.fetch(channelId).catch(() => null);
+    if (!channel || !channel.isTextBased()) return;
+    await channel.send({
+      content: '💜 **VYRA güncellendi!**',
+      embeds: [embed('🚀 Yeni VYRA Sürümü: ' + (release.name || release.tag_name),
+        (release.body || 'Bu sürüm için ayrıntılı not paylaşılmadı.').slice(0, 2800) +
+        '\n\n[⬇️ Sürümü görüntüle](' + release.html_url + ')\n[🌐 VYRA sitesi](https://mm2vault.github.io/VYRA-Website/)', PINK)]
+    });
+    data.lastReleaseId = release.id;
+    saveData();
+  } catch (error) { console.error('VYRA release check:', error.message); }
+}
+
 function attach(client) {
   client.on('messageCreate', async message => {
     if (!message.guild || message.author.bot) return;
@@ -203,4 +233,4 @@ function attach(client) {
     }
   });
 }
-module.exports = { commands, setup, attach };
+module.exports = { commands, setup, attach, checkRelease };
