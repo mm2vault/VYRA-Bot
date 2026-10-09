@@ -49,3 +49,5 @@ XP and release tracking are stored in the host's local `vyra-data.json` file. If
 - `/poll soru secenekler`: 2–5 seçenekli emoji oylaması oluşturur; seçenekleri virgülle ayır.
 
 Komutlar bot yeniden başlatılıp Discord'a kaydedildikten sonra görünür. XP ve günlük ödül kayıtları `vyra-data.json` dosyasında tutulur; ücretsiz worker ortamı dosya sistemini sıfırlıyorsa kalıcı disk veya harici veritabanı gerekir.
+
+- `/report uye sebep`: üyeyi özel yetkili rapor kanalına bildirir.
