@@ -30,7 +30,7 @@ Never commit the bot token. Set environment variables in your hosting provider's
 - Existing VYRA info, download, server, setup, clear, kick, and ban commands
 - Moderation commands: `/warn`, `/timeout`, `/untimeout`, and `/slowmode`; role hierarchy is checked before member actions
 - Staff-only management channels with restricted visibility
-- Moderation logs for member joins/leaves, bans, message deletion/edits, and moderation actions
+- Moderation logs for member joins/leaves, bans, message deletion/edits, moderation actions, and automatic flood protection
 - Purple-themed channel/category setup and starter posts
 - Welcome embeds and automatic VYRA Member role
 - Private support tickets, with close/archive controls
@@ -65,4 +65,4 @@ Create an OAuth2 application in Discord Developer Portal and set these hosting e
 - `DASHBOARD_GUILD_ID`: target Discord server ID (defaults to `GUILD_ID`)
 - `PORT`: optional; use the port provided by your hosting service
 
-The service must expose its HTTP port publicly and use HTTPS. Only users with Administrator or Manage Server permission in the configured server can sign in. The bot role must be above members it moderates. Never publish OAuth secrets or the bot token. After configuration, open the deployed service root URL.
+Optional flood protection can be tuned with `AUTOMOD_MAX_MESSAGES` (default 7), `AUTOMOD_WINDOW_SECONDS` (default 8), and `AUTOMOD_TIMEOUT_MINUTES` (default 1). It uses message rate only and does not read message contents.\n\nThe service must expose its HTTP port publicly and use HTTPS. Only users with Administrator or Manage Server permission in the configured server can sign in. The bot role must be above members it moderates. Never publish OAuth secrets or the bot token. After configuration, open the deployed service root URL.
