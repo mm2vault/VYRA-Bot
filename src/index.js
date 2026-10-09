@@ -18,6 +18,7 @@ const commands = [
   new SlashCommandBuilder().setName('download').setDescription('VYRA indirme bağlantısı.'),
   new SlashCommandBuilder().setName('help').setDescription('Bot komutları.'),
   new SlashCommandBuilder().setName('server').setDescription('Sunucu bilgileri.'),
+  new SlashCommandBuilder().setName('report').setDescription('Bir üyeyi yetkililere bildirir.').addUserOption(o => o.setName('uye').setDescription('Bildirilecek üye').setRequired(true)).addStringOption(o => o.setName('sebep').setDescription('Bildirim sebebi').setRequired(true).setMaxLength(500)),
   new SlashCommandBuilder().setName('setup').setDescription('VYRA sunucu yapısını kurar.').setDefaultMemberPermissions(PermissionFlagsBits.Administrator),
   new SlashCommandBuilder().setName('clear').setDescription('Son mesajları siler.').addIntegerOption(o => o.setName('miktar').setDescription('1-100').setMinValue(1).setMaxValue(100).setRequired(true)).setDefaultMemberPermissions(PermissionFlagsBits.ManageMessages),
   new SlashCommandBuilder().setName('kick').setDescription('Üyeyi sunucudan atar.').addUserOption(o => o.setName('uye').setDescription('Atılacak üye').setRequired(true)).addStringOption(o => o.setName('sebep').setDescription('İşlem sebebi').setMaxLength(400)).setDefaultMemberPermissions(PermissionFlagsBits.KickMembers),
@@ -123,8 +124,17 @@ client.on('interactionCreate', async interaction => {
   try {
     if (interaction.commandName === 'vyra') return interaction.reply({ embeds: [new EmbedBuilder().setColor(0x8d3cff).setTitle('💜 VYRA').setDescription('Müziği sadece dinleme. Hisset.')] });
     if (interaction.commandName === 'download') return interaction.reply('🎧 VYRA: https://mm2vault.github.io/VYRA-Website/');
-    if (interaction.commandName === 'help') return interaction.reply('💜 **VYRA Komutları**\n/vyra • /download • /server • /setup • /clear • /kick • /ban • /warn • /timeout • /untimeout • /slowmode • /suggest • /bug • /level • /profile • /daily • /leaderboard • /poll • /ticket-panel • /announce');
+    if (interaction.commandName === 'help') return interaction.reply('💜 **VYRA Komutları**\n/vyra • /download • /server • /setup • /report • /clear • /kick • /ban • /warn • /timeout • /untimeout • /slowmode • /suggest • /bug • /level • /profile • /daily • /leaderboard • /poll • /ticket-panel • /announce');
     if (interaction.commandName === 'server') return interaction.reply('📊 ' + guild.name + ' • ' + guild.memberCount + ' üye • ' + guild.channels.cache.size + ' kanal');
+    if (interaction.commandName === 'report') {
+      const reported = interaction.options.getUser('uye', true);
+      const reason = interaction.options.getString('sebep', true);
+      if (reported.bot || reported.id === interaction.user.id) return interaction.reply({ content: '❌ Kendini veya bir botu bildiremezsin.', ephemeral: true });
+      const channel = guild.channels.cache.find(ch => ch.name === '🚨・rapor-log' && ch.type === ChannelType.GuildText);
+      if (!channel) return interaction.reply({ content: '❌ Rapor kanalı bulunamadı. Yönetici /setup çalıştırsın.', ephemeral: true });
+      await channel.send({ embeds: [new EmbedBuilder().setColor(0xff5c7a).setTitle('🚨 Yeni üye bildirimi').setDescription('**Bildirilen:** ' + reported.tag + ' (' + reported.id + ')\n**Bildiren:** ' + interaction.user.tag + ' (' + interaction.user.id + ')\n**Sebep:** ' + reason).setTimestamp()] });
+      return interaction.reply({ content: '✅ Bildirimin yetkililere iletildi. Teşekkürler.', ephemeral: true });
+    }
     if (interaction.commandName === 'setup') {
       await interaction.deferReply({ ephemeral: true });
       await setup(guild);
