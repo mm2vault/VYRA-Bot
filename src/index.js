@@ -137,13 +137,13 @@ client.on('messageCreate', async message => {
   if (recent.length < FLOOD_MAX) return;
   floodWindows.delete(key);
   if (!message.member.moderatable) {
-    await staffLog(message.guild, '🚨 Flood algılandı', '**Üye:** ' + message.author.tag + '\\n**Kanal:** ' + message.channel + '\\n**Not:** Bot rolü üyeye timeout uygulayamıyor.', 0xff5c7a);
+    await staffLog(message.guild, '🚨 Flood algılandı', '**Üye:** ' + message.author.tag + '\n**Kanal:** ' + message.channel + '\n**Not:** Bot rolü üyeye timeout uygulayamıyor.', 0xff5c7a);
     return;
   }
   try {
     await message.member.timeout(FLOOD_TIMEOUT_MS, 'VYRA otomatik flood koruması');
     if (message.deletable) await message.delete().catch(() => {});
-    await staffLog(message.guild, '🛡️ Otomatik flood koruması', '**Üye:** ' + message.author.tag + '\\n**Kanal:** ' + message.channel + '\\n**Mesaj:** ' + FLOOD_MAX + ' mesaj / ' + Math.round(FLOOD_WINDOW_MS / 1000) + ' saniye\\n**Timeout:** ' + Math.round(FLOOD_TIMEOUT_MS / 60000) + ' dakika', 0xff5c7a);
+    await staffLog(message.guild, '🛡️ Otomatik flood koruması', '**Üye:** ' + message.author.tag + '\n**Kanal:** ' + message.channel + '\n**Mesaj:** ' + FLOOD_MAX + ' mesaj / ' + Math.round(FLOOD_WINDOW_MS / 1000) + ' saniye\n**Timeout:** ' + Math.round(FLOOD_TIMEOUT_MS / 60000) + ' dakika', 0xff5c7a);
   } catch (error) {
     console.error('VYRA flood protection:', error.message);
   }
