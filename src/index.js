@@ -11,7 +11,7 @@ new SlashCommandBuilder().setName('server').setDescription('Sunucu bilgileri.'),
 new SlashCommandBuilder().setName('setup').setDescription('VYRA sunucu yapısını kurar.').setDefaultMemberPermissions(PermissionFlagsBits.Administrator),
 new SlashCommandBuilder().setName('clear').setDescription('Mesajları siler.').addIntegerOption(o=>o.setName('miktar').setDescription('1-100').setMinValue(1).setMaxValue(100).setRequired(true)).setDefaultMemberPermissions(PermissionFlagsBits.ManageMessages),
 new SlashCommandBuilder().setName('kick').setDescription('Üyeyi atar.').addUserOption(o=>o.setName('üye').setDescription('Üye').setRequired(true)).setDefaultMemberPermissions(PermissionFlagsBits.KickMembers),
-new SlashCommandBuilder().setName('ban').setDescription('Üyeyi yasaklar.').addUserOption(o=>o.setName('üye').setDescription('Üye').setRequired(true)).setDefaultMemberPermissions(PermissionFlagsBits.BanMembers)
+new SlashCommandBuilder().setName('ban').setDescription('Üyeyi yasaklar.').addUserOption(o=>o.setName('üye').setDescription('Üye').setRequired(true)).setDefaultMemberPermissions(PermissionFlagsBits.BanMembers),
 ...community.commands
 ].map(c=>typeof c.toJSON==='function'?c.toJSON():c);
 const client=new Client({intents:[GatewayIntentBits.Guilds,GatewayIntentBits.GuildMembers,GatewayIntentBits.GuildMessages]});
