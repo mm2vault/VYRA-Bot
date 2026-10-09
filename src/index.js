@@ -123,7 +123,7 @@ client.on('interactionCreate', async interaction => {
   try {
     if (interaction.commandName === 'vyra') return interaction.reply({ embeds: [new EmbedBuilder().setColor(0x8d3cff).setTitle('💜 VYRA').setDescription('Müziği sadece dinleme. Hisset.')] });
     if (interaction.commandName === 'download') return interaction.reply('🎧 VYRA: https://mm2vault.github.io/VYRA-Website/');
-    if (interaction.commandName === 'help') return interaction.reply('💜 **VYRA Komutları**\n/vyra • /download • /server • /setup • /clear • /kick • /ban • /warn • /timeout • /untimeout • /slowmode • /suggest • /bug • /level • /leaderboard • /ticket-panel • /announce');
+    if (interaction.commandName === 'help') return interaction.reply('💜 **VYRA Komutları**\n/vyra • /download • /server • /setup • /clear • /kick • /ban • /warn • /timeout • /untimeout • /slowmode • /suggest • /bug • /level • /profile • /daily • /leaderboard • /poll • /ticket-panel • /announce');
     if (interaction.commandName === 'server') return interaction.reply('📊 ' + guild.name + ' • ' + guild.memberCount + ' üye • ' + guild.channels.cache.size + ' kanal');
     if (interaction.commandName === 'setup') {
       await interaction.deferReply({ ephemeral: true });
