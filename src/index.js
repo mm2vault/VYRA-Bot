@@ -13,7 +13,7 @@ new SlashCommandBuilder().setName('clear').setDescription('Mesajları siler.').a
 new SlashCommandBuilder().setName('kick').setDescription('Üyeyi atar.').addUserOption(o=>o.setName('üye').setDescription('Üye').setRequired(true)).setDefaultMemberPermissions(PermissionFlagsBits.KickMembers),
 new SlashCommandBuilder().setName('ban').setDescription('Üyeyi yasaklar.').addUserOption(o=>o.setName('üye').setDescription('Üye').setRequired(true)).setDefaultMemberPermissions(PermissionFlagsBits.BanMembers)
 ...community.commands
-].map(c=>c.toJSON());
+].map(c=>typeof c.toJSON==='function'?c.toJSON():c);
 const client=new Client({intents:[GatewayIntentBits.Guilds,GatewayIntentBits.GuildMembers,GatewayIntentBits.GuildMessages]});
 async function register(){const rest=new REST({version:'10'}).setToken(token);await rest.put(Routes.applicationGuildCommands(clientId,guildId),{body:commands});}
 async function category(guild,name){return guild.channels.cache.find(c=>c.type===ChannelType.GuildCategory&&c.name===name)||guild.channels.create({name,type:ChannelType.GuildCategory});}
@@ -30,7 +30,7 @@ await community.setup(guild, client.user);
 return true;}
 community.attach(client);
 client.once('ready',async()=>{console.log('VYRA Bot: '+client.user.tag);try{await register();console.log('Commands registered.')}catch(e){console.error(e)}});
-client.on('guildMemberAdd',async member=>{const ch=member.guild.channels.cache.find(c=>c.name==='👋・hoş-geldin');if(!ch)return;const e=new EmbedBuilder().setColor(0x8d3cff).setTitle('💜 VYRA\'ya hoş geldin!').setDescription(member+' aramıza katıldı. 🎧');ch.send({embeds:[e]}).catch(()=>{});});
+client.on('guildMemberAdd',async member=>{const role=member.guild.roles.cache.find(r=>r.name==='💜 VYRA Member');if(role)await member.roles.add(role,'VYRA otomatik üye rolü').catch(()=>{});const ch=member.guild.channels.cache.find(c=>c.name==='👋・hoş-geldin');if(!ch)return;const e=new EmbedBuilder().setColor(0x8d3cff).setTitle('💜 VYRA\'ya hoş geldin!').setDescription(member+' aramıza katıldı. 🎧');ch.send({embeds:[e]}).catch(()=>{});});
 client.on('interactionCreate',async i=>{if(!i.isChatInputCommand())return;const g=i.guild;
 if(i.commandName==='vyra')return i.reply({embeds:[new EmbedBuilder().setColor(0x8d3cff).setTitle('💜 VYRA').setDescription('Müziği sadece dinleme. Hisset.')]});
 if(i.commandName==='download')return i.reply('🎧 VYRA: https://mm2vault.github.io/VYRA-Website/');
