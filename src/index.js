@@ -69,8 +69,19 @@ async function setup(guild) {
   }
   let staffParent = guild.channels.cache.find(c => c.type === ChannelType.GuildCategory && c.name === '👑 YÖNETİM');
   if (!staffParent) staffParent = await guild.channels.create({ name: '👑 YÖNETİM', type: ChannelType.GuildCategory });
+  const moderatorRole = guild.roles.cache.find(r => r.name === '🛡️ Moderator');
+  const staffOverwrites = [
+    { id: guild.roles.everyone.id, deny: [PermissionFlagsBits.ViewChannel] },
+    { id: client.user.id, allow: [PermissionFlagsBits.ViewChannel, PermissionFlagsBits.SendMessages, PermissionFlagsBits.ReadMessageHistory, PermissionFlagsBits.ManageChannels] }
+  ];
+  if (moderatorRole) staffOverwrites.push({ id: moderatorRole.id, allow: [PermissionFlagsBits.ViewChannel, PermissionFlagsBits.SendMessages, PermissionFlagsBits.ReadMessageHistory] });
   for (const name of ['👑・yönetim', '📋・mod-log', '🚨・rapor-log', '🛠️・geliştirici']) {
-    if (!guild.channels.cache.some(c => c.parentId === staffParent.id && c.name === name)) await guild.channels.create({ name, type: ChannelType.GuildText, parent: staffParent.id, topic: 'VYRA Staff' });
+    let channel = guild.channels.cache.find(c => c.parentId === staffParent.id && c.name === name);
+    if (!channel) {
+      channel = await guild.channels.create({ name, type: ChannelType.GuildText, parent: staffParent.id, topic: 'VYRA Staff', permissionOverwrites: staffOverwrites });
+    } else {
+      await channel.permissionOverwrites.set(staffOverwrites, 'VYRA staff kanallarını gizlilik için güvene al').catch(() => {});
+    }
   }
   await community.setup(guild, client.user);
 }
