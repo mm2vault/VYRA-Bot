@@ -118,6 +118,36 @@ client.on('messageUpdate', (oldMessage, newMessage) => {
   staffLog(newMessage.guild, '✏️ Mesaj düzenlendi', '**Kanal:** ' + newMessage.channel + '\n**Üye:** ' + newMessage.author.tag + '\n**Önce:** ' + before.slice(0, 900) + '\n**Sonra:** ' + after.slice(0, 900), 0xf0b45a);
 });
 community.attach(client);
+
+// VYRA flood protection: does not require the privileged Message Content intent.
+const floodWindows = new Map();
+const FLOOD_MAX = Math.max(4, Math.min(20, Number(process.env.AUTOMOD_MAX_MESSAGES || 7)));
+const FLOOD_WINDOW_MS = Math.max(3000, Math.min(30000, Number(process.env.AUTOMOD_WINDOW_SECONDS || 8) * 1000));
+const FLOOD_TIMEOUT_MS = Math.max(30000, Math.min(3600000, Number(process.env.AUTOMOD_TIMEOUT_MINUTES || 1) * 60000));
+client.on('messageCreate', async message => {
+  if (!message.guild || message.author.bot || !message.member) return;
+  if (message.member.permissions.has(PermissionFlagsBits.Administrator) ||
+      message.member.permissions.has(PermissionFlagsBits.ManageMessages) ||
+      message.member.permissions.has(PermissionFlagsBits.ModerateMembers)) return;
+  const key = message.guild.id + ':' + message.author.id;
+  const now = Date.now();
+  const recent = (floodWindows.get(key) || []).filter(time => now - time < FLOOD_WINDOW_MS);
+  recent.push(now);
+  floodWindows.set(key, recent);
+  if (recent.length < FLOOD_MAX) return;
+  floodWindows.delete(key);
+  if (!message.member.moderatable) {
+    await staffLog(message.guild, '🚨 Flood algılandı', '**Üye:** ' + message.author.tag + '\\n**Kanal:** ' + message.channel + '\\n**Not:** Bot rolü üyeye timeout uygulayamıyor.', 0xff5c7a);
+    return;
+  }
+  try {
+    await message.member.timeout(FLOOD_TIMEOUT_MS, 'VYRA otomatik flood koruması');
+    if (message.deletable) await message.delete().catch(() => {});
+    await staffLog(message.guild, '🛡️ Otomatik flood koruması', '**Üye:** ' + message.author.tag + '\\n**Kanal:** ' + message.channel + '\\n**Mesaj:** ' + FLOOD_MAX + ' mesaj / ' + Math.round(FLOOD_WINDOW_MS / 1000) + ' saniye\\n**Timeout:** ' + Math.round(FLOOD_TIMEOUT_MS / 60000) + ' dakika', 0xff5c7a);
+  } catch (error) {
+    console.error('VYRA flood protection:', error.message);
+  }
+});
 client.on('interactionCreate', async interaction => {
   if (!interaction.isChatInputCommand()) return;
   const guild = interaction.guild;
