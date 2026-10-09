@@ -73,12 +73,12 @@ async function setup(guild, botUser) {
   const welcome = guild.channels.cache.find(c => c.name === '👋・hoş-geldin' && c.type === ChannelType.GuildText);
   const rules = guild.channels.cache.find(c => c.name === '📜・kurallar' && c.type === ChannelType.GuildText);
   const info = [
-    [rules, '📜 VYRA Topluluk Kuralları', '1. Herkese saygılı davran.\\n2. Spam ve izinsiz reklam yapma.\\n3. Taciz ve kişisel bilgi paylaşımı yasaktır.\\n4. Sorunlar için destek bileti aç.\\n5. Şüpheli indirme bağlantılarına dikkat et.\\n6. Discord kurallarına uy. 💜'],
-    [guild.channels.cache.find(c => c.name === '💜・vyra'), '💜 VYRA’ya hoş geldin', 'Müziği sadece dinleme. Hisset. 🎧\\nResmî site: https://mm2vault.github.io/VYRA-Website/'],
-    [guild.channels.cache.find(c => c.name === '⬇️・indirme'), '⬇️ VYRA İndirme Merkezi', 'Resmî site ve indirme bağlantıları: https://mm2vault.github.io/VYRA-Website/\\nYeni sürümler burada duyurulur.'],
+    [rules, '📜 VYRA Topluluk Kuralları', '1. Herkese saygılı davran.\n2. Spam ve izinsiz reklam yapma.\n3. Taciz ve kişisel bilgi paylaşımı yasaktır.\n4. Sorunlar için destek bileti aç.\n5. Şüpheli indirme bağlantılarına dikkat et.\n6. Discord kurallarına uy. 💜'],
+    [guild.channels.cache.find(c => c.name === '💜・vyra'), '💜 VYRA’ya hoş geldin', 'Müziği sadece dinleme. Hisset. 🎧\nResmî site: https://mm2vault.github.io/VYRA-Website/'],
+    [guild.channels.cache.find(c => c.name === '⬇️・indirme'), '⬇️ VYRA İndirme Merkezi', 'Resmî site ve indirme bağlantıları: https://mm2vault.github.io/VYRA-Website/\nYeni sürümler burada duyurulur.'],
     [guild.channels.cache.find(c => c.name === '📱・uygulama'), '📱 VYRA Uygulaması', 'Yeni sürüm ve kullanım bilgileri için indirme kanalını kontrol et. Sorun yaşarsan destek bileti aç.'],
     [guild.channels.cache.find(c => c.name === '✨・özellikler'), '✨ VYRA Özellikleri', 'Yeni özellikler ve geliştirmeler burada duyurulacak. Fikirlerini öneriler kanalına gönderebilirsin.'],
-    [guild.channels.cache.find(c => c.name === '🔗・bağlantılar'), '🔗 Resmî Bağlantılar', 'VYRA sitesi: https://mm2vault.github.io/VYRA-Website/\\nYalnızca resmî bağlantılara güven.'],
+    [guild.channels.cache.find(c => c.name === '🔗・bağlantılar'), '🔗 Resmî Bağlantılar', 'VYRA sitesi: https://mm2vault.github.io/VYRA-Website/\nYalnızca resmî bağlantılara güven.'],
     [guild.channels.cache.find(c => c.name === '❓・yardım'), '❓ Yardım ve Destek', 'Önce uygulamanın güncel sürümde olduğunu kontrol et. Hata bildir veya aşağıdaki butondan özel destek bileti aç.']
   ];
   for (const [channel, title, body] of info) {
@@ -153,7 +153,7 @@ function attach(client) {
         const targetName = suggestion ? '💡・öneriler' : '🐛・hata-bildirim';
         const channel = interaction.guild.channels.cache.find(c => c.name === targetName && c.type === ChannelType.GuildText);
         if (!channel) return interaction.reply({ content: 'Kanal bulunamadı. Yönetici /setup çalıştırsın.', ephemeral: true });
-        await channel.send({ embeds: [embed((suggestion ? '💡 Yeni Öneri: ' : '🐛 Hata Bildirimi: ') + title, details + '\\n\\nGönderen: ' + interaction.user, suggestion ? PINK : 0xff5c7a)] });
+        await channel.send({ embeds: [embed((suggestion ? '💡 Yeni Öneri: ' : '🐛 Hata Bildirimi: ') + title, details + '\n\nGönderen: ' + interaction.user, suggestion ? PINK : 0xff5c7a)] });
         return interaction.reply({ content: suggestion ? '💜 Önerin iletildi, teşekkürler!' : '✅ Hata bildirimin iletildi.', ephemeral: true });
       }
       if (!interaction.isChatInputCommand()) return;
@@ -178,7 +178,7 @@ function attach(client) {
         const floor = level * level * 100;
         const next = (level + 1) * (level + 1) * 100;
         const progress = Math.max(0, Math.min(10, Math.floor((((record.xp || 0) - floor) / Math.max(1, next - floor)) * 10)));
-        return interaction.reply({ embeds: [embed('✨ ' + user.username + ' • Seviye ' + level, 'XP: **' + (record.xp || 0) + '**\\nİlerleme: ' + '▰'.repeat(progress) + '▱'.repeat(10 - progress) + '\\nSonraki seviye: **' + next + ' XP**')] });
+        return interaction.reply({ embeds: [embed('✨ ' + user.username + ' • Seviye ' + level, 'XP: **' + (record.xp || 0) + '**\nİlerleme: ' + '▰'.repeat(progress) + '▱'.repeat(10 - progress) + '\nSonraki seviye: **' + next + ' XP**')] });
       }
       if (interaction.commandName === 'leaderboard') {
         const entries = Object.entries(data.users).filter(e => e[0].startsWith(interaction.guild.id + ':')).map(e => ({ id: e[0].split(':')[1], xp: e[1].xp || 0 })).sort((a, b) => b.xp - a.xp).slice(0, 10);
@@ -187,7 +187,7 @@ function attach(client) {
           const user = await client.users.fetch(e.id).catch(() => null);
           return '**' + (i + 1) + '.** ' + (user ? user.username : 'Üye') + ' — **' + e.xp + ' XP** (Seviye ' + levelForXp(e.xp) + ')';
         }));
-        return interaction.reply({ embeds: [embed('🏆 VYRA XP Sıralaması', lines.join('\\n'))] });
+        return interaction.reply({ embeds: [embed('🏆 VYRA XP Sıralaması', lines.join('\n'))] });
       }
       if (interaction.commandName === 'announce') {
         const title = interaction.options.getString('baslik', true);
