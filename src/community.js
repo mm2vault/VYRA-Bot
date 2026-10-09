@@ -31,7 +31,7 @@ function embed(title, description, color = PURPLE) {
 function levelForXp(xp) { return Math.floor(Math.sqrt(Math.max(0, xp) / 100)); }
 function userData(guildId, userId) {
   const key = guildId + ':' + userId;
-  if (!data.users[key]) data.users[key] = { xp: 0, lastMessageAt: 0 };
+  if (!data.users[key]) data.users[key] = { xp: 0, lastMessageAt: 0, lastDailyAt: 0 };
   return data.users[key];
 }
 function ticketPanel() {
@@ -46,6 +46,9 @@ const commands = [
   new SlashCommandBuilder().setName('bug').setDescription('Bir hata bildir.'),
   new SlashCommandBuilder().setName('level').setDescription('XP seviyeni gösterir.').addUserOption(o => o.setName('uye').setDescription('Seviyesine bakılacak üye').setRequired(false)),
   new SlashCommandBuilder().setName('leaderboard').setDescription('XP sıralamasını gösterir.'),
+  new SlashCommandBuilder().setName('daily').setDescription('Günlük XP ödülünü al.'),
+  new SlashCommandBuilder().setName('profile').setDescription('VYRA topluluk profilini gösterir.').addUserOption(o => o.setName('uye').setDescription('Profili görüntülenecek üye').setRequired(false)),
+  new SlashCommandBuilder().setName('poll').setDescription('Topluluk anketi oluşturur.').addStringOption(o => o.setName('soru').setDescription('Anket sorusu').setRequired(true).setMaxLength(180)).addStringOption(o => o.setName('secenekler').setDescription('Virgülle ayırarak 2-5 seçenek yaz').setRequired(true).setMaxLength(500)),
   new SlashCommandBuilder().setName('announce').setDescription('Duyuru kanalına mesaj gönderir.').addStringOption(o => o.setName('baslik').setDescription('Başlık').setRequired(true).setMaxLength(200)).addStringOption(o => o.setName('mesaj').setDescription('Duyuru içeriği').setRequired(true).setMaxLength(3500)).setDefaultMemberPermissions(PermissionFlagsBits.ManageGuild)
 ].map(c => c.toJSON());
 
@@ -201,6 +204,44 @@ function attach(client) {
           new ActionRowBuilder().addComponents(new TextInputBuilder().setCustomId(suggestion ? 'suggest:details' : 'bug:details').setLabel(suggestion ? 'Öneri ayrıntısı' : 'Hata nasıl oluşuyor?').setStyle(TextInputStyle.Paragraph).setMaxLength(1500).setRequired(true))
         );
         return interaction.showModal(modal);
+      }
+      if (interaction.commandName === 'daily') {
+        const record = userData(interaction.guild.id, interaction.user.id);
+        const now = Date.now();
+        const cooldown = 24 * 60 * 60 * 1000;
+        const remaining = cooldown - (now - (record.lastDailyAt || 0));
+        if (remaining > 0) {
+          const hours = Math.floor(remaining / 3600000);
+          const minutes = Math.ceil((remaining % 3600000) / 60000);
+          return interaction.reply({ content: '⏳ Günlük ödülünü zaten aldın. **' + hours + ' saat ' + minutes + ' dakika** sonra tekrar gel!', ephemeral: true });
+        }
+        const reward = 50 + Math.floor(Math.random() * 51);
+        record.xp = (record.xp || 0) + reward;
+        record.lastDailyAt = now;
+        saveData();
+        return interaction.reply({ embeds: [embed('🎁 Günlük ödülün hazır!', interaction.user + ' **' + reward + ' XP** kazandın!\nToplam XP: **' + record.xp + '** 💜', PINK)] });
+      }
+      if (interaction.commandName === 'profile') {
+        const user = interaction.options.getUser('uye') || interaction.user;
+        const record = userData(interaction.guild.id, user.id);
+        const xp = record.xp || 0;
+        const level = levelForXp(xp);
+        const next = (level + 1) * (level + 1) * 100;
+        const floor = level * level * 100;
+        const progress = Math.max(0, Math.min(10, Math.floor(((xp - floor) / Math.max(1, next - floor)) * 10)));
+        return interaction.reply({ embeds: [embed('💜 ' + user.username + ' • VYRA Profili', '🏆 **Seviye:** ' + level + '\n✨ **Toplam XP:** ' + xp + '\n📈 **Sonraki seviye:** ' + next + ' XP\n' + '▰'.repeat(progress) + '▱'.repeat(10 - progress), PINK)] });
+      }
+      if (interaction.commandName === 'poll') {
+        const question = interaction.options.getString('soru', true);
+        const options = interaction.options.getString('secenekler', true).split(',').map(s => s.trim()).filter(Boolean);
+        if (options.length < 2 || options.length > 5 || new Set(options.map(s => s.toLowerCase())).size !== options.length) {
+          return interaction.reply({ content: '❌ Virgülle ayrılmış, birbirinden farklı 2-5 seçenek yazmalısın.', ephemeral: true });
+        }
+        const emojis = ['1️⃣', '2️⃣', '3️⃣', '4️⃣', '5️⃣'];
+        const description = options.map((option, i) => emojis[i] + ' ' + option).join('\n\n');
+        const message = await interaction.channel.send({ embeds: [embed('📊 ' + question, description + '\n\n*Anketi başlatan: ' + interaction.user.username + '*', PINK)] });
+        for (let i = 0; i < options.length; i++) await message.react(emojis[i]);
+        return interaction.reply({ content: '✅ Anket oluşturuldu: ' + message.url, ephemeral: true });
       }
       if (interaction.commandName === 'level') {
         const user = interaction.options.getUser('uye') || interaction.user;
