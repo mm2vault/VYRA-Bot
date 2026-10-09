@@ -165,11 +165,12 @@ function attach(client) {
         if (interaction.customId === 'vyra:ticket:create') return await openTicket(interaction, client);
         if (interaction.customId.startsWith('vyra:ticket:close:')) {
           const ownerId = interaction.customId.split(':').pop();
-          const staff = interaction.memberPermissions && interaction.memberPermissions.has(PermissionFlagsBits.ManageChannels);
+          const staff = (interaction.memberPermissions && interaction.memberPermissions.has(PermissionFlagsBits.ManageChannels)) || (interaction.member && interaction.member.roles && interaction.member.roles.cache.some(role => role.name === '🛡️ Moderator'));
           if (interaction.user.id !== ownerId && !staff) return interaction.reply({ content: 'Bu bileti yalnızca sahibi veya destek ekibi kapatabilir.', ephemeral: true });
           const channel = interaction.channel;
           await interaction.reply({ content: '🔒 Bilet kapatılıyor; kanal arşivleniyor.', ephemeral: true });
           await channel.setName(('closed-' + channel.name).slice(0, 90)).catch(() => {});
+          await channel.setTopic('VYRA_TICKET_CLOSED:' + ownerId).catch(() => {});
           await channel.permissionOverwrites.edit(ownerId, { SendMessages: false }).catch(() => {});
           return;
         }
