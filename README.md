@@ -51,3 +51,18 @@ XP and release tracking are stored in the host's local `vyra-data.json` file. If
 Komutlar bot yeniden başlatılıp Discord'a kaydedildikten sonra görünür. XP ve günlük ödül kayıtları `vyra-data.json` dosyasında tutulur; ücretsiz worker ortamı dosya sistemini sıfırlıyorsa kalıcı disk veya harici veritabanı gerekir.
 
 - `/report uye sebep`: üyeyi özel yetkili rapor kanalına bildirir.
+
+
+## VYRA Control Panel (optional)
+
+The responsive web control panel uses Discord OAuth2, shows live server/bot stats, and can apply moderation actions. It remains disabled until all settings are configured.
+
+Create an OAuth2 application in Discord Developer Portal and set these hosting environment variables:
+- `DASHBOARD_CLIENT_ID`: OAuth2 application client ID
+- `DASHBOARD_CLIENT_SECRET`: OAuth2 client secret (keep private)
+- `DASHBOARD_REDIRECT_URI`: exact public callback URL, e.g. `https://YOUR-HOST/auth/callback`; add the same URL under OAuth2 Redirects
+- `DASHBOARD_SESSION_SECRET`: random secret of at least 32 characters
+- `DASHBOARD_GUILD_ID`: target Discord server ID (defaults to `GUILD_ID`)
+- `PORT`: optional; use the port provided by your hosting service
+
+The service must expose its HTTP port publicly and use HTTPS. Only users with Administrator or Manage Server permission in the configured server can sign in. The bot role must be above members it moderates. Never publish OAuth secrets or the bot token. After configuration, open the deployed service root URL.
