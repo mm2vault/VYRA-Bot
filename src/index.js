@@ -190,4 +190,5 @@ client.on('interactionCreate', async interaction => {
     return interaction.reply(reply).catch(() => {});
   }
 });
+require('./dashboard').start(client);
 client.login(token);
