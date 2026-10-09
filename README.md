@@ -40,3 +40,12 @@ Never commit the bot token. Set environment variables in your hosting provider's
 - Optional GitHub release announcements
 
 XP and release tracking are stored in the host's local `vyra-data.json` file. If your hosting provider uses an ephemeral filesystem, data may reset after a rebuild or redeploy; use persistent disk/database storage for long-term persistence.
+
+
+## Yeni topluluk komutları
+
+- `/daily`: 24 saatte bir 50–100 XP günlük ödül.
+- `/profile [uye]`: üyenin seviye ve XP profilini gösterir.
+- `/poll soru secenekler`: 2–5 seçenekli emoji oylaması oluşturur; seçenekleri virgülle ayır.
+
+Komutlar bot yeniden başlatılıp Discord'a kaydedildikten sonra görünür. XP ve günlük ödül kayıtları `vyra-data.json` dosyasında tutulur; ücretsiz worker ortamı dosya sistemini sıfırlıyorsa kalıcı disk veya harici veritabanı gerekir.
