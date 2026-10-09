@@ -22,10 +22,15 @@ Never commit the bot token. Set environment variables in your hosting provider's
 4. Move the bot's role above the `💜 VYRA Member` role and any members it needs to moderate.
 5. In Discord Developer Portal → Bot, enable the **Server Members Intent** so join welcomes and automatic member roles can work.
 6. For message XP, the bot needs the Guild Messages gateway intent, which is enabled in the code. It counts messages without reading message contents.
+7. Give the bot role sufficient position and permissions for timeout/kick/ban and channel management. Assign `🛡️ Moderator` only to trusted staff.
+8. Run `/setup` after deploying the update so the management channels receive private permission overwrites.
 
 ## Features
 
 - Existing VYRA info, download, server, setup, clear, kick, and ban commands
+- Moderation commands: `/warn`, `/timeout`, `/untimeout`, and `/slowmode`; role hierarchy is checked before member actions
+- Staff-only management channels with restricted visibility
+- Moderation logs for member joins/leaves, bans, message deletion/edits, and moderation actions
 - Purple-themed channel/category setup and starter posts
 - Welcome embeds and automatic VYRA Member role
 - Private support tickets, with close/archive controls
