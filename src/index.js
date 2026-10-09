@@ -29,7 +29,7 @@ const s=await category(guild,'👑 YÖNETİM');for(const n of ['👑・yönetim'
 await community.setup(guild, client.user);
 return true;}
 community.attach(client);
-client.once('ready',async()=>{console.log('VYRA Bot: '+client.user.tag);try{await register();console.log('Commands registered.')}catch(e){console.error(e)}});
+client.once('ready',async()=>{console.log('VYRA Bot: '+client.user.tag);try{await register();console.log('Commands registered.')}catch(e){console.error(e)};await community.checkRelease(client);setInterval(()=>community.checkRelease(client),5*60*1000);});
 client.on('guildMemberAdd',async member=>{const role=member.guild.roles.cache.find(r=>r.name==='💜 VYRA Member');if(role)await member.roles.add(role,'VYRA otomatik üye rolü').catch(()=>{});const ch=member.guild.channels.cache.find(c=>c.name==='👋・hoş-geldin');if(!ch)return;const e=new EmbedBuilder().setColor(0x8d3cff).setTitle('💜 VYRA\'ya hoş geldin!').setDescription(member+' aramıza katıldı. 🎧');ch.send({embeds:[e]}).catch(()=>{});});
 client.on('interactionCreate',async i=>{if(!i.isChatInputCommand())return;const g=i.guild;
 if(i.commandName==='vyra')return i.reply({embeds:[new EmbedBuilder().setColor(0x8d3cff).setTitle('💜 VYRA').setDescription('Müziği sadece dinleme. Hisset.')]});
